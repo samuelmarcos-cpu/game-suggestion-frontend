@@ -62,7 +62,8 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
-import gql from "graphql-tag";
+import SearchGames from "@/graphql/game.graphql";
+import CreatePoll from "@/graphql/poll.graphql";
 
 export default {
   components: { GameCard },
@@ -115,13 +116,7 @@ export default {
     async createPoll() {
       this.isLoadingCreate = true;
       const result = await this.$apollo.mutate({
-        mutation: gql`
-          mutation($question: String!, $games: [Int!]!) {
-            CreatePoll(question: $question, games: $games) {
-              id
-            }
-          }
-        `,
+        mutation: CreatePoll,
         variables: {
           question: this.question,
           games: this.gamesSelected
@@ -157,16 +152,7 @@ export default {
         return;
       }
       const result = await this.$apollo.query({
-        query: gql`
-          query($q: QueryString!) {
-            SearchGames(query: $q) {
-              id
-              name
-              image
-              year
-            }
-          }
-        `,
+        query: SearchGames,
         variables: {
           q
         }

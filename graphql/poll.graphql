@@ -1,0 +1,5 @@
+mutation CreatePoll($question: String!, $games: [Int!]!) {
+  CreatePoll(question: $question, games: $games) {
+    id
+  }
+}

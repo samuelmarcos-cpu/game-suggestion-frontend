@@ -1,0 +1,8 @@
+query SearchGames($q: QueryString!) {
+  SearchGames(query: $q) {
+    id
+    name
+    image
+    year
+  }
+}
