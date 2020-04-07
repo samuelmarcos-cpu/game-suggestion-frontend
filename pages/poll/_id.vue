@@ -26,7 +26,8 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
-import gql from "graphql-tag";
+import { Poll } from "@/graphql/query.graphql";
+import { Vote } from "@/graphql/mutation.graphql";
 
 export default {
   components: { GameCard },
@@ -55,22 +56,7 @@ export default {
     const id = parseInt(this.$route.params.id);
     try {
       const result = await this.$apollo.query({
-        query: gql`
-          query($id: Int!) {
-            Poll(poll: $id) {
-              question
-              options {
-                id
-                game {
-                  id
-                  name
-                  image
-                  year
-                }
-              }
-            }
-          }
-        `,
+        query: Poll,
         variables: {
           id
         }
@@ -94,13 +80,7 @@ export default {
       game.vote = true;
       const id = this.$route.params.id;
       const result = await this.$apollo.mutate({
-        mutation: gql`
-          mutation($option: Int!) {
-            Vote(option: $option) {
-              id
-            }
-          }
-        `,
+        mutation: Vote,
         variables: {
           option: game.option
         }

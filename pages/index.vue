@@ -62,8 +62,8 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
-import SearchGames from "@/graphql/game.graphql";
-import CreatePoll from "@/graphql/poll.graphql";
+import { SearchGames } from "@/graphql/query.graphql";
+import { CreatePoll } from "@/graphql/mutation.graphql";
 
 export default {
   components: { GameCard },

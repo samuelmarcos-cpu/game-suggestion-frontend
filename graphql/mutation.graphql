@@ -3,3 +3,9 @@ mutation CreatePoll($question: String!, $games: [Int!]!) {
     id
   }
 }
+
+mutation Vote($option: Int!) {
+  Vote(option: $option) {
+    id
+  }
+}

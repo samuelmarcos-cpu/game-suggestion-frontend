@@ -1,0 +1,23 @@
+query SearchGames($q: String!) {
+  SearchGames(query: $q) {
+    id
+    name
+    image
+    year
+  }
+}
+
+query Poll($id: Int!) {
+  Poll(poll: $id) {
+    question
+    options {
+      id
+      game {
+        id
+        name
+        image
+        year
+      }
+    }
+  }
+}
