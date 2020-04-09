@@ -9,6 +9,7 @@
             clearable
             v-model="question"
             :rules="questionRules"
+            :disabled="isLoadingCreate"
             rounded
             filled
             dense
@@ -21,6 +22,7 @@
             :loading="isLoadingSearch"
             :search-input.sync="search"
             :rules="optionsRules"
+            :disabled="isLoadingCreate"
             item-value="id"
             item-text="name"
             hide-selected
@@ -39,7 +41,12 @@
           </v-autocomplete>
           <div class="d-flex flex-row flex-wrap align-center justify-center">
             <div v-for="game of gamesFilter" :key="game.id" class="mx-2 my-2">
-              <game-card :game="game" @click="remove(game)" max-width="120px">
+              <game-card
+                :game="game"
+                :disabled="isLoadingCreate"
+                @click="remove(game)"
+                max-width="120px"
+              >
                 <v-container fluid fill-height class="pa-0 justify-center">
                   <v-icon class="d-flex align-self-end">close</v-icon>
                 </v-container>
@@ -51,8 +58,8 @@
             block
             class="mt-5"
             :disabled="!valid"
-            @click="createPoll"
             :loading="isLoadingCreate"
+            @click="createPoll"
           >Create Poll</v-btn>
         </v-form>
       </v-flex>
@@ -122,12 +129,10 @@ export default {
           games: this.gamesSelected
         }
       });
-      if (result.data) {
-        this.$router.push({
-          path: `poll/${result.data.CreatePoll.id.toString()}`
-        });
-      }
-      this.isLoadingCreate = false;
+      this.$router.push({
+        path: `/poll/${result.data.CreatePoll.id.toString()}`
+      });
+      this.isLoadingCreate = true;
     }
   },
   watch: {

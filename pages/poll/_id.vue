@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid fill-height class="pa-0">
+  <v-container fluid fill-height>
     <v-layout column align-center justify-center>
       <p class="text-center display-2 font-weight-black">{{question}}</p>
       <div class="d-flex flex-row justify-space-around">
-        <v-flex xs12 sm12 md10>
+        <v-flex xs12 sm10 md8>
           <div class="d-flex flex-row flex-wrap align-center justify-center">
             <div v-for="game of games" :key="game.id" class="mx-4 my-4">
               <game-card
@@ -26,17 +26,39 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
-import { Poll } from "@/graphql/query.graphql";
+import { PollVote } from "@/graphql/query.graphql";
 import { Vote } from "@/graphql/mutation.graphql";
 
 export default {
   components: { GameCard },
-  data() {
-    return {
-      isLoadingQuery: false,
-      question: "",
-      games: []
-    };
+  validate: context => /^\d+$/.test(context.params.id),
+  async asyncData(context) {
+    const id = parseInt(context.params.id);
+    try {
+      const result = await context.app.apolloProvider.defaultClient.query({
+        query: PollVote,
+        variables: {
+          id
+        }
+      });
+      const poll = result.data.Poll;
+      const games = poll.options.map(option => {
+        return {
+          ...option.game,
+          option: option.id,
+          vote: false
+        };
+      });
+      return {
+        question: poll.question,
+        games
+      };
+    } catch (e) {
+      return {
+        question: "Something Unexpected Happened",
+        games: []
+      };
+    }
   },
   computed: {
     disabledGames() {
@@ -48,33 +70,6 @@ export default {
       return false;
     }
   },
-  validate({ params }) {
-    return /^\d+$/.test(params.id);
-  },
-  async created() {
-    this.isLoadingQuery = true;
-    const id = parseInt(this.$route.params.id);
-    try {
-      const result = await this.$apollo.query({
-        query: Poll,
-        variables: {
-          id
-        }
-      });
-      const poll = result.data.Poll;
-      this.question = poll.question;
-      this.games = poll.options.map(option => {
-        return {
-          ...option.game,
-          option: option.id,
-          vote: false
-        };
-      });
-    } catch (e) {
-      this.question = "Something Unexpected Happened";
-    }
-    this.isLoadingQuery = false;
-  },
   methods: {
     async vote(game) {
       game.vote = true;
@@ -85,12 +80,9 @@ export default {
           option: game.option
         }
       });
-      if (result.data) {
-        console.log(result.data.Vote.id);
-        this.$router.push({
-          path: `result/${id.toString()}`
-        });
-      }
+      this.$router.push({
+        path: `/result/${id.toString()}`
+      });
       game.vote = false;
     }
   }

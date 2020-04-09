@@ -7,16 +7,29 @@ query SearchGames($q: String!) {
   }
 }
 
-query Poll($id: Int!) {
+query PollVote($id: Int!) {
   Poll(poll: $id) {
     question
     options {
       id
       game {
-        id
         name
         image
-        year
+      }
+    }
+  }
+}
+
+query PollResult($id: Int!) {
+  Poll(poll: $id) {
+    question
+    options {
+      game {
+        name
+        image
+      }
+      votes {
+        date
       }
     }
   }
