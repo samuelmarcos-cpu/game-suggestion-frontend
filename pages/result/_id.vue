@@ -2,96 +2,69 @@
   <v-container fluid fill-height>
     <v-layout column align-center justify-center>
       <p class="text-center display-2 font-weight-black">{{question}}</p>
-      <div class="d-flex flex-row justify-space-around">
-        <v-flex xs12 sm10 md8>
-          <div class="d-flex flex-row flex-wrap align-center justify-center">
-            <div v-for="(game, index) of games" :key="index" class="mx-4 my-4">
-              <game-card :game="game" @click="selectGame(game)" max-width="120px"></game-card>
-            </div>
-          </div>
-          <v-divider />
-          <pie :chartdata="datacollectionGames" />
-        </v-flex>
+      <div class="d-flex flex-column">
+        <div class="d-flex flex-row justify-space-between">
+          <div>Asked: {{date.toLocaleDateString()}}</div>
+          <div>{{totalVotes}} Votes</div>
+        </div>
+        <game-group-result
+          :games="games.filter(game => game.votes.length == highestVote).slice(0, 5)"
+          :total-votes="totalVotes"
+          :width-cards="170"
+        />
+        <game-group-result
+          :games="games.filter(game => game.votes.length < highestVote)"
+          :total-votes="totalVotes"
+        />
+        <div v-if="totalVotes > 0" class="d-flex flex-row justify-space-around my-5">
+          <my-line :games="games.filter(game => game.selected)" precision="25" class="mx-5" />
+          <pie :games="games.filter(game => game.selected)" :total-votes="totalVotes" class="mx-5" />
+        </div>
       </div>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import GameCard from "@/components/GameCard.vue";
-import Pie from "@/components/Pie.vue";
+import GameGroupResult from "@/components/GameGroupResult.vue";
+import Pie from "@/components/charts/Pie.vue";
+import MyLine from "@/components/charts/Line.vue";
 
 import { PollResult } from "@/graphql/query.graphql";
 
 export default {
-  components: { GameCard, Pie },
+  components: { GameGroupResult, Pie, MyLine },
   validate: context => /^\d+$/.test(context.params.id),
   async asyncData(context) {
     const id = parseInt(context.params.id);
-    try {
-      const result = await context.app.apolloProvider.defaultClient.query({
-        query: PollResult,
-        variables: {
-          id
-        }
-      });
-      const poll = result.data.Poll;
-      const games = poll.options.map(option => {
-        return {
-          ...option.game,
-          votes: option.votes,
-          selected: false
-        };
-      });
-      games.sort((a, b) => a.votes.length - b.votes.length);
-      return {
-        question: poll.question,
-        games: games.reverse()
-      };
-    } catch (e) {
-      return {
-        question: "Something Unexpected Happened",
-        games: []
-      };
-    }
-  },
-  computed: {
-    totalVotes() {
-      return this.games.reduce((old, game) => {
-        return game.votes.length + old;
-      }, 0);
-    },
-    datacollectionGames() {
-      const data = [];
-      const labels = [];
-      let selectedVotes = 0;
-
-      const games = this.games.filter(game => game.selected);
-      games.forEach(game => {
-        const gameVotes = game.votes.length;
-        selectedVotes += gameVotes;
-        data.push(gameVotes);
-        labels.push(game.name);
-      });
-
-      const othersVotes = this.totalVotes - selectedVotes;
-      if (othersVotes > 0) {
-        data.push(othersVotes);
-        labels.push("Others");
+    const result = await context.app.apolloProvider.defaultClient.query({
+      query: PollResult,
+      variables: {
+        id
       }
+    });
 
-      console.log(labels);
-
+    const poll = result.data.Poll;
+    let totalVotes = 0;
+    let highestVote = 0;
+    const games = poll.options.map((option, index) => {
+      const qtdVotes = option.votes.length;
+      totalVotes += qtdVotes;
+      highestVote = highestVote < qtdVotes ? qtdVotes : highestVote;
       return {
-        datasets: [{ data }],
-        labels
+        ...option.game,
+        votes: option.votes,
+        selected: index < 5
       };
-    }
-  },
-  methods: {
-    selectGame(game) {
-      game.selected = !game.selected;
-    }
+    });
+
+    return {
+      question: poll.question,
+      date: new Date(poll.date),
+      games,
+      highestVote,
+      totalVotes
+    };
   }
 };
 </script>

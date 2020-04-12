@@ -2,12 +2,13 @@
   <v-tooltip top open-delay="500">
     <template v-slot:activator="{ on }">
       <v-card
+        hover
         v-on="on"
-        :disabled="disabled"
+        :ripple="ripple"
         :max-width="maxWidth"
         :max-height="maxHeight"
+        :disabled="disabled"
         @click="click"
-        hover
       >
         <v-img :src="game.image | gameImageValidation | gameImageCoverBig">
           <slot></slot>
@@ -25,9 +26,13 @@ export default {
       type: Object,
       required: true
     },
+    ripple: {
+      type: Boolean,
+      default: true
+    },
     disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     maxWidth: String,
     maxHeight: String

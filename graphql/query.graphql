@@ -13,6 +13,7 @@ query PollVote($id: Int!) {
     options {
       id
       game {
+        id
         name
         image
       }
@@ -23,6 +24,7 @@ query PollVote($id: Int!) {
 query PollResult($id: Int!) {
   Poll(poll: $id) {
     question
+    date
     options {
       game {
         name

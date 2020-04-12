@@ -12,10 +12,9 @@
   },
   "dependencies": {
     "@nuxtjs/apollo": "^4.0.0-rc19",
-    "chart.js": "^2.9.3",
     "graphql-tag": "^2.10.3",
     "nuxt": "^2.0.0",
-    "vue-chartjs": "^3.5.0"
+    "vue-google-charts": "^0.3.2"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.0.0"
