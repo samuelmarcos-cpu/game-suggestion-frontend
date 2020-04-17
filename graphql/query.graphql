@@ -7,6 +7,14 @@ query SearchGames($q: String!) {
   }
 }
 
+query SearchPlatforms($q: String!) {
+  SearchPlatforms(query: $q) {
+    id
+    name
+    image
+  }
+}
+
 query PollVote($id: Int!) {
   Poll(poll: $id) {
     question
@@ -32,6 +40,20 @@ query PollResult($id: Int!) {
       }
       votes {
         date
+      }
+    }
+  }
+}
+
+query PollVote($id: Int!) {
+  Poll(poll: $id) {
+    question
+    options {
+      id
+      game {
+        id
+        name
+        image
       }
     }
   }

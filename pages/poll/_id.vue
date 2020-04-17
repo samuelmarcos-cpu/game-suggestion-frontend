@@ -25,12 +25,12 @@
 </template>
 
 <script>
-import GameCard from "@/components/GameCard.vue";
+import Card from "@/components/Card.vue";
 import { PollVote } from "@/graphql/query.graphql";
 import { Vote } from "@/graphql/mutation.graphql";
 
 export default {
-  components: { GameCard },
+  components: { Card },
   validate: context => /^\d+$/.test(context.params.id),
   async asyncData(context) {
     const id = parseInt(context.params.id);

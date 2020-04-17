@@ -10,22 +10,21 @@
         :disabled="disabled"
         @click="click"
       >
-        <v-img :src="game.image | gameImageValidation | gameImageCoverBig">
+        <!-- <v-img :src="item.image | itemImageValidation | itemImageCoverBig"> -->
+        <v-img :src="image">
           <slot></slot>
         </v-img>
       </v-card>
     </template>
-    <span>{{game.name}}</span>
+    <span>{{name}}</span>
   </v-tooltip>
 </template>
 
 <script>
 export default {
   props: {
-    game: {
-      type: Object,
-      required: true
-    },
+    name: String,
+    image: String,
     ripple: {
       type: Boolean,
       default: true

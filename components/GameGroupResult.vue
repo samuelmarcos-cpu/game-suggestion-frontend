@@ -29,10 +29,10 @@
 </template>
 
 <script>
-import GameCard from "@/components/GameCard.vue";
+import Card from "@/components/Card.vue";
 
 export default {
-  components: { GameCard },
+  components: { Card },
   props: {
     games: {
       type: Array,

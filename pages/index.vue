@@ -1,65 +1,59 @@
 <template>
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md6>
-        <h1 class="text-center">Game Suggestion</h1>
+      <v-flex xs12 sm10 md8>
+        <h1 class="text-center">GAME SUGGESTION</h1>
         <v-form ref="form" v-model="valid" class="my-5">
           <v-text-field
-            placeholder="Type your question here"
             clearable
-            v-model="question"
-            :rules="questionRules"
-            :disabled="isLoadingCreate"
             rounded
             filled
             dense
-          ></v-text-field>
-          <v-autocomplete
-            placeholder="Enter a game option"
-            no-data-text="Games not found"
-            v-model="gamesSelected"
-            :items="games"
-            :loading="isLoadingSearch"
-            :search-input.sync="search"
-            :rules="optionsRules"
+            placeholder="Type your question here"
+            v-model="question"
+            :rules="questionRules"
             :disabled="isLoadingCreate"
-            item-value="id"
-            item-text="name"
-            hide-selected
-            multiple
-          >
-            <template v-slot:item="{ item }">
-              <v-list-item-avatar tile size="35">
-                <img :src="item.image | gameImageValidation | gameImageCoverSmall" />
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.name"></v-list-item-title>
-                <v-list-item-subtitle v-text="item.year"></v-list-item-subtitle>
-              </v-list-item-content>
-            </template>
-            <template v-slot:selection></template>
-          </v-autocomplete>
-          <div class="d-flex flex-row flex-wrap align-center justify-center">
-            <div v-for="game of gamesFilter" :key="game.id" class="mx-2 my-2">
-              <game-card
-                :game="game"
-                :disabled="isLoadingCreate"
-                @click="remove(game)"
-                max-width="120px"
-              >
-                <v-container fluid fill-height class="pa-0 justify-center">
-                  <v-icon class="d-flex align-self-end">close</v-icon>
-                </v-container>
-              </game-card>
+          ></v-text-field>
+          <v-card>
+            <v-card-title class="text-center justify-center py-3">RESTRICTIONS</v-card-title>
+            <div class="d-flex flex-row flex-wrap mx-1 my-0">
+              <v-chip
+                close
+                v-for="restriction in selected"
+                :key="restriction.key"
+                @click:close="selected.splice(selected.indexOf(restriction), 1)"
+                class="ma-1"
+              >{{restriction.name}}</v-chip>
             </div>
-          </div>
+            <v-tabs :grow="true">
+              <v-tab>Platforms</v-tab>
+              <v-tab-item>
+                <autocomplete v-model="selected" :search="search" placeholder="Select platform">
+                  <template v-slot="{ item, toggle }">
+                    <div class="ma-1">
+                      <card
+                        max-width="90px"
+                        max-height="90px"
+                        :name="item.name + ` (${item.active})`"
+                        :image="item.image | imageValidation"
+                        @click="toggle"
+                      >
+                        <transition name="slide">
+                          <div v-if="item.active" class="text-center caption primary">ACTIVE</div>
+                        </transition>
+                      </card>
+                    </div>
+                  </template>
+                </autocomplete>
+              </v-tab-item>
+            </v-tabs>
+          </v-card>
           <v-btn
             rounded
             block
             class="mt-5"
             :disabled="!valid"
             :loading="isLoadingCreate"
-            @click="createPoll"
           >Create Poll</v-btn>
         </v-form>
       </v-flex>
@@ -68,21 +62,21 @@
 </template>
 
 <script>
-import GameCard from "@/components/GameCard.vue";
-import { SearchGames } from "@/graphql/query.graphql";
-import { CreatePoll } from "@/graphql/mutation.graphql";
+import Autocomplete from "@/components/Autocomplete.vue";
+import Card from "@/components/Card.vue";
+
+import { SearchPlatforms } from "@/graphql/query.graphql";
 
 export default {
-  components: { GameCard },
+  components: {
+    Autocomplete,
+    Card
+  },
   data() {
     return {
-      newSearch: "",
       valid: true,
       question: "",
-      search: null,
-      games: [],
-      gamesSelected: null,
-      isLoadingSearch: false,
+      selected: [],
       isLoadingCreate: false,
 
       questionRules: [
@@ -90,90 +84,56 @@ export default {
         v =>
           (v && v.trim().length >= 10) ||
           "Question must be bigger than 10 character"
-      ],
-
-      optionsRules: [
-        v => !!v || "Options is required",
-        v => (v && v.length >= 2) || "Must have at least 2 options",
-        v => (v && v.length <= 20) || "No more than 20 games"
       ]
     };
   },
-  computed: {
-    gamesFilter() {
-      if (this.gamesSelected) {
-        return this.gamesSelected.map(gameId => {
-          const game = this.games.filter(game => game.id === gameId)[0];
-          const index = this.games.indexOf(game);
-          return this.games[index];
-        });
-      }
-      return [];
-    }
-  },
   methods: {
-    remove(game) {
-      if (this.gamesSelected) {
-        const indexSelected = this.gamesSelected.indexOf(game.id);
-        this.gamesSelected.splice(indexSelected, 1);
-      }
-      const index = this.games.indexOf(game);
-      this.games.splice(index, 1);
-    },
-    async createPoll() {
-      this.isLoadingCreate = true;
-      const result = await this.$apollo.mutate({
-        mutation: CreatePoll,
-        variables: {
-          question: this.question,
-          games: this.gamesSelected
-        }
-      });
-      this.$router.push({
-        path: `/poll/${result.data.CreatePoll.id.toString()}`
-      });
-      this.isLoadingCreate = true;
-    }
-  },
-  watch: {
     async search(q) {
-      this.isLoadingSearch = true;
-      if (!q) {
-        if (this.isLoadingSearch) {
-          this.isLoadingSearch = false;
-        }
-        return;
-      }
-      this.newSearch = q;
-      const request = await new Promise(resolve =>
-        setTimeout(() => {
-          if (q !== this.newSearch) {
-            resolve(false);
-          }
-          resolve(true);
-        }, 500)
-      );
-      if (!request) {
-        return;
-      }
       const result = await this.$apollo.query({
-        query: SearchGames,
+        query: SearchPlatforms,
         variables: {
           q
         }
       });
-      if (q !== this.newSearch) {
-        return;
-      }
-      const games = result.data.SearchGames.map(game => {
-        if (game.year) {
-          game.year = new Date(game.year * 1000).getFullYear();
-        }
-        return game;
+      return result.data.SearchPlatforms.map(platform => {
+        return {
+          key: platform.id,
+          ...platform
+        };
       });
-      this.games = [...games, ...this.gamesFilter];
-      this.isLoadingSearch = false;
     }
   }
 };
 </script>
+
+<style scoped>
+@keyframes slide-in {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.slide-enter-active {
+  animation: slide-in 1s ease;
+}
+
+.slide-leave-active {
+  animation: slide-out 1s ease;
+}
+</style>
