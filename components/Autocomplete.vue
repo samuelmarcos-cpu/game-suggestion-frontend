@@ -103,7 +103,7 @@ export default {
           const selectedItem = value.filter(vl => vl.key === item.key);
           if (selectedItem.length <= 0) {
             item.active = false;
-          } else {
+          } else if (selectedItem[0].active) {
             item.active = true;
           }
         });

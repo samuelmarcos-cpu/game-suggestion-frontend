@@ -1,5 +1,5 @@
-mutation CreatePoll($question: String!, $games: [Int!]!) {
-  CreatePoll(question: $question, games: $games) {
+mutation CreatePoll($data: PollInput!) {
+  CreatePoll(data: $data) {
     id
   }
 }

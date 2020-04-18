@@ -15,6 +15,13 @@ query SearchPlatforms($q: String!) {
   }
 }
 
+query Genres {
+  Genres {
+    id
+    name
+  }
+}
+
 query PollVote($id: Int!) {
   Poll(poll: $id) {
     question
