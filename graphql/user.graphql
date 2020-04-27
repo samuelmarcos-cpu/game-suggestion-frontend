@@ -1,0 +1,7 @@
+query Login($nick: String!, $password: String!) {
+  Login(nick: $nick, password: $password) {
+    id
+    nick
+    token
+  }
+}

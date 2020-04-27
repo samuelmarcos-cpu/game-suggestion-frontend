@@ -4,8 +4,8 @@ mutation CreatePoll($data: PollInput!) {
   }
 }
 
-mutation Vote($option: Int!) {
-  Vote(option: $option) {
+mutation Vote($poll: Int!, $game: Int!) {
+  Vote(poll: $poll, game: $game) {
     id
   }
 }

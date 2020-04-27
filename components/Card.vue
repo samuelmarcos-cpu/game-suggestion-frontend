@@ -7,6 +7,7 @@
         :ripple="ripple"
         :max-width="maxWidth"
         :max-height="maxHeight"
+        :loading="loading"
         :disabled="disabled"
         @click="click"
       >
@@ -28,6 +29,10 @@ export default {
     ripple: {
       type: Boolean,
       default: true
+    },
+    loading: {
+      type: Boolean,
+      default: false
     },
     disabled: {
       type: Boolean,

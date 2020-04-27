@@ -6,7 +6,10 @@
       dense
       v-model="text"
       :placeholder="placeholder"
+      :height="height"
       :loading="loading"
+      :hint="hint"
+      :persistent-hint="true"
       :disabled="disabled"
     ></v-text-field>
     <div class="d-flex flex-row flex-wrap align-center justify-center px-5 pb-5">
@@ -20,19 +23,24 @@
 <script>
 export default {
   props: {
+    value: {
+      type: Array,
+      required: false
+    },
     searchInterval: {
       type: Number,
-      default: 1000
+      default: 500
     },
     search: Function,
-    value: Array,
     placeholder: String,
+    height: Number,
     disabled: Boolean
   },
   data() {
     return {
       text: "",
       newText: "",
+      hint: "",
       loading: false,
       itens: []
     };
@@ -49,6 +57,7 @@ export default {
     async text(t) {
       this.newText = t;
       if (t.trim() == "") {
+        this.hint = "";
         this.loading = false;
         return;
       }
@@ -69,8 +78,8 @@ export default {
       itens = itens.map(item => {
         let active = false;
 
-        const selectedItem = selected.filter(sel => sel.key === item.key);
-        if (selectedItem.length > 0) {
+        const index = selected.findIndex(sel => sel.key === item.key);
+        if (index >= 0) {
           active = true;
           selected = selected.filter(sel => sel.key !== item.key);
         }
@@ -87,6 +96,8 @@ export default {
         return;
       }
       this.itens = itens;
+      this.$emit("result", this.itens);
+      this.hint = this.itens.length === 0 ? "no results" : "";
       this.loading = false;
     },
     itens: {
@@ -100,12 +111,8 @@ export default {
       deep: true,
       handler(value) {
         this.itens.forEach(item => {
-          const selectedItem = value.filter(vl => vl.key === item.key);
-          if (selectedItem.length <= 0) {
-            item.active = false;
-          } else if (selectedItem[0].active) {
-            item.active = true;
-          }
+          const index = value.findIndex(vl => vl.key === item.key);
+          item.active = index >= 0;
         });
       }
     }

@@ -18,12 +18,26 @@ export default {
   },
   computed: {
     chart() {
-      let gameNames = ["Year"];
       const allVotes = [];
+
+      let allVotesEquals = true;
+      let initialVotes = null;
+      let gameNames = ["Year"];
+
       const gameVotes = this.games.map(game => {
         gameNames.push(game.name);
+
         return game.votes.map(vote => {
           allVotes.push(vote.date);
+
+          if (initialVotes === null) {
+            initialVotes = vote.date;
+          }
+
+          if (initialVotes != vote.date) {
+            allVotesEquals = false;
+          }
+
           return {
             ...vote,
             distance: []
@@ -31,7 +45,7 @@ export default {
         });
       });
 
-      if (allVotes.length <= 1) {
+      if (allVotes.length <= 1 || allVotesEquals) {
         allVotes.push(new Date().getTime());
       }
 
@@ -74,11 +88,7 @@ export default {
         return [date, ...line];
       });
 
-      if (gameNames.length == 1) {
-        gameNames = [];
-      }
-
-      data.unshift(gameNames);
+      data.unshift(gameNames.length === 1 ? [] : gameNames);
 
       return {
         chartData: data,

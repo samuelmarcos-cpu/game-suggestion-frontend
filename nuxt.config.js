@@ -45,7 +45,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/apollo'],
+  modules: ['@nuxtjs/apollo', 'cookie-universal-nuxt'],
   apollo: {
     clientConfigs: {
       default: {
@@ -72,6 +72,9 @@ export default {
           success: colors.green.accent3
         }
       }
+    },
+    icons: {
+      iconfont: 'mdiSvg'
     }
   },
   /*

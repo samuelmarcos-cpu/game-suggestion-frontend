@@ -28,17 +28,12 @@
             </div>
             <v-tabs v-model="tab" :grow="true">
               <v-tab key="platforms">Platforms</v-tab>
-
               <v-tab key="genres">Genres</v-tab>
             </v-tabs>
 
             <v-tabs-items v-model="tab">
               <v-tab-item key="platforms">
-                <autocomplete
-                  v-model="selectedPlatforms"
-                  :search="searchPlatforms"
-                  placeholder="Select platform"
-                >
+                <autocomplete v-model="selectedPlatforms" :search="searchPlatforms">
                   <template v-slot="{ item, toggle }">
                     <div class="ma-1">
                       <card
@@ -168,7 +163,7 @@ export default {
       });
       const id = result.data.CreatePoll.id;
       this.$router.push({
-        path: `/poll/${id.toString()}`
+        path: `/vote/${id.toString()}`
       });
       this.isLoadingCreate = false;
     }

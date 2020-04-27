@@ -1,20 +1,3 @@
-query SearchGames($q: String!) {
-  SearchGames(query: $q) {
-    id
-    name
-    image
-    year
-  }
-}
-
-query SearchPlatforms($q: String!) {
-  SearchPlatforms(query: $q) {
-    id
-    name
-    image
-  }
-}
-
 query Genres {
   Genres {
     id
@@ -22,41 +5,67 @@ query Genres {
   }
 }
 
-query PollVote($id: Int!) {
-  Poll(poll: $id) {
-    question
-    options {
-      id
-      game {
-        id
-        name
-        image
-      }
-    }
-  }
-}
-
-query PollResult($id: Int!) {
-  Poll(poll: $id) {
+query SearchPoll($query: String!) {
+  SearchPoll(query: $query) {
+    id
     question
     date
-    options {
-      game {
-        name
-        image
-      }
-      votes {
-        date
-      }
+    platforms {
+      id
+    }
+    genres {
+      id
+    }
+    votes {
+      id
     }
   }
 }
 
-query PollVote($id: Int!) {
-  Poll(poll: $id) {
+query SearchPlatforms($query: String!) {
+  SearchPlatforms(query: $query) {
+    id
+    name
+    image
+  }
+}
+
+query SearchGames($poll: Int!, $query: String!) {
+  SearchGames(poll: $poll, query: $query) {
+    id
+    name
+    image
+    year
+  }
+}
+
+query PollVote($poll: Int!) {
+  Poll(poll: $poll) {
     question
-    options {
+    date
+    platforms {
       id
+      name
+    }
+    genres {
+      id
+      name
+    }
+  }
+}
+
+query PollResult($poll: Int!) {
+  Poll(poll: $poll) {
+    question
+    date
+    platforms {
+      name
+    }
+    genres {
+      name
+    }
+    votes {
+      date
       game {
         id
         name

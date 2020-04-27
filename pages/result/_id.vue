@@ -1,26 +1,44 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout column align-center justify-center>
-      <p class="text-center display-2 font-weight-black">{{question}}</p>
-      <div class="d-flex flex-column">
-        <div class="d-flex flex-row justify-space-between">
-          <div>Asked: {{date.toLocaleDateString()}}</div>
-          <div>{{totalVotes}} Votes</div>
+    <v-layout align-center justify-center>
+      <v-flex xs12 sm10 md8>
+        <div class="d-flex flex-row justify-center">
+          <div class="d-inline">
+            <div class="d-flex flex-row justify-space-between">
+              <div class="subtitle-2">Asked: {{ date.toLocaleDateString() }}</div>
+              <div class="subtitle-2">{{ totalVotes }} Votes</div>
+            </div>
+            <h1 class="text-center display-2 font-weight-black">{{question}}</h1>
+          </div>
         </div>
+
+        <div class="d-flex flex-row justify-space-around my-1">
+          <v-btn text>
+            <v-icon left>{{ share }}</v-icon>Share
+          </v-btn>
+          <v-btn text nuxt :to="`/vote/${poll}`" class="mx-1">
+            <v-icon left>{{ check }}</v-icon>Vote
+          </v-btn>
+        </div>
+
+        <v-divider class="mt-2 mb-3"></v-divider>
+
         <game-group-result
-          :games="games.filter(game => game.votes.length == highestVote).slice(0, 5)"
+          :games="games.filter(game => game.votes.length == this.highestVote)"
           :total-votes="totalVotes"
           :width-cards="170"
         />
-        <game-group-result
-          :games="games.filter(game => game.votes.length < highestVote)"
-          :total-votes="totalVotes"
-        />
+
         <div v-if="totalVotes > 0" class="d-flex flex-row justify-space-around my-5">
-          <my-line :games="games.filter(game => game.selected)" precision="25" class="mx-5" />
+          <my-line :games="games.filter(game => game.selected)" :precision="25" class="mx-5" />
           <pie :games="games.filter(game => game.selected)" :total-votes="totalVotes" class="mx-5" />
         </div>
-      </div>
+
+        <game-group-result
+          :games="games.filter(game => game.votes.length < this.highestVote)"
+          :total-votes="totalVotes"
+        />
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -32,6 +50,8 @@ import MyLine from "@/components/charts/Line.vue";
 
 import { PollResult } from "@/graphql/query.graphql";
 
+import { mdiCheckBoxOutline, mdiShareVariant } from "@mdi/js";
+
 export default {
   components: { GameGroupResult, Pie, MyLine },
   validate: context => /^\d+$/.test(context.params.id),
@@ -39,31 +59,48 @@ export default {
     const id = parseInt(context.params.id);
     const result = await context.app.apolloProvider.defaultClient.query({
       query: PollResult,
-      variables: {
-        id
+      variables: { poll: id }
+    });
+    const poll = result.data.Poll;
+    let totalVotes = poll.votes.length;
+
+    const games = [];
+    poll.votes.forEach(vote => {
+      let findGame = false;
+      games.forEach(game => {
+        if (game.id === vote.game.id) {
+          findGame = true;
+          game.votes.push({ date: vote.date });
+        }
+      });
+      if (findGame === false) {
+        games.push({
+          ...vote.game,
+          votes: [{ date: vote.date }],
+          selected: false
+        });
       }
     });
-
-    const poll = result.data.Poll;
-    let totalVotes = 0;
-    let highestVote = 0;
-    const games = poll.options.map((option, index) => {
-      const qtdVotes = option.votes.length;
-      totalVotes += qtdVotes;
-      highestVote = highestVote < qtdVotes ? qtdVotes : highestVote;
-      return {
-        ...option.game,
-        votes: option.votes,
-        selected: index < 5
-      };
+    games.sort((a, b) => a.votes.length - b.votes.length);
+    games.reverse();
+    const highestVote = games[0].votes.length;
+    games.forEach((game, index) => {
+      game.selected = index < 5;
     });
 
     return {
+      poll: id,
       question: poll.question,
       date: new Date(poll.date),
       games,
       highestVote,
       totalVotes
+    };
+  },
+  data() {
+    return {
+      check: mdiCheckBoxOutline,
+      share: mdiShareVariant
     };
   }
 };

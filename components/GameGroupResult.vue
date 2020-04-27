@@ -3,19 +3,16 @@
     <div
       v-for="game of games.sort((a, b) => a.votes.length - b.votes.length).reverse()"
       :key="game.id"
-      class="mx-4 my-4"
+      class="mx-4 my-2"
     >
-      <game-card
-        :game="game"
+      <card
+        :name="game.name"
+        :image="game.image | imageValidation | imageCoverBig"
         :max-width="widthCards + 'px'"
         :ripple="false"
         @click="game.selected = !game.selected"
       >
         <template v-if="totalVotes > 0">
-          <v-icon
-            v-if="game.selected"
-            :style="{position: 'absolute', right: '40%', bottom: '0%'}"
-          >done</v-icon>
           <v-container fluid fill-height class="pa-0 align-end">
             <div :style="style(game)" class="d-flex flex-row justify-space-between">
               <div class="mx-1">{{game.votes.length}}</div>
@@ -23,7 +20,7 @@
             </div>
           </v-container>
         </template>
-      </game-card>
+      </card>
     </div>
   </div>
 </template>
@@ -51,7 +48,7 @@ export default {
     return {
       defaultStyle: {
         background:
-          "linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.5) 100%)",
+          "linear-gradient(0deg, rgba(255,255,255,0) 50%, rgba(0,0,0,0.5) 75%)",
         opacity: 0.8,
         width: "100%",
         height: "0%"
@@ -60,11 +57,15 @@ export default {
   },
   methods: {
     calcPerc(game) {
-      return (game.votes.length * 100) / this.totalVotes;
+      const perc = (game.votes.length * 100) / this.totalVotes;
+      return perc.toFixed(2);
     },
     style(game) {
       return {
         ...this.defaultStyle,
+        background: game.selected
+          ? "linear-gradient(0deg, rgba(255,255,255,0) 50%, rgba(25,118,210,0.5) 75%)"
+          : this.defaultStyle.background,
         height: 100 - this.calcPerc(game) + "%"
       };
     }
