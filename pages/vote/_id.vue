@@ -2,26 +2,19 @@
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
       <v-flex xs12 sm10 md8>
-        <div class="d-flex flex-row justify-center">
-          <div class="d-inline">
-            <div class="subtitle-2">Asked: {{ date.toLocaleDateString() }}</div>
-            <h1 class="text-center display-2 font-weight-black">{{question}}</h1>
+        <poll-title :title="question" :asked="date">
+          <div class="d-flex flex-row justify-space-around">
+            <v-btn text>
+              <v-icon left>{{ share }}</v-icon>Share
+            </v-btn>
+            <v-btn text nuxt :to="`/result/${poll}`">
+              <v-icon left>{{ pollIcon }}</v-icon>Result
+            </v-btn>
           </div>
-        </div>
-
-        <div class="d-flex flex-row justify-space-around my-1">
-          <v-btn text>
-            <v-icon left>{{ share }}</v-icon>Share
-          </v-btn>
-          <v-btn text nuxt :to="`/result/${poll}`" class="mx-1">
-            <v-icon left>{{ pollIcon }}</v-icon>Result
-          </v-btn>
-        </div>
-
-        <v-divider class="mt-2 mb-5"></v-divider>
+        </poll-title>
 
         <div v-if="restrictions.length > 0" class="d-flex justify-center">
-          <v-card class="px-5 py-1 mb-5">
+          <v-card class="px-5 py-1 mb-3">
             <div class="title text-center">RESTRICTIONS</div>
             <div class="d-flex flex-row flex-wrap align-center justify-center py-1">
               <v-chip
@@ -64,6 +57,7 @@
 </template>
 
 <script>
+import PollTitle from "@/components/PollTitle.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 import Card from "@/components/Card.vue";
 
@@ -73,7 +67,7 @@ import { Vote } from "@/graphql/mutation.graphql";
 import { mdiPoll, mdiShareVariant } from "@mdi/js";
 
 export default {
-  components: { Autocomplete, Card },
+  components: { PollTitle, Autocomplete, Card },
   validate: context => /^\d+$/.test(context.params.id),
   async asyncData(context) {
     const id = parseInt(context.params.id);

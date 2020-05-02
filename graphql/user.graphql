@@ -1,3 +1,36 @@
+mutation AlterUser($nick: String!, $password: String!) {
+  alterUser(nick: $nick, password: $password) {
+    id
+    nick
+    token
+  }
+}
+
+mutation NewUser($nick: String!, $password: String!) {
+  newUser(nick: $nick, password: $password) {
+    id
+    nick
+    token
+  }
+}
+
+query MyPolls {
+  MyPolls {
+    id
+    question
+    date
+    platforms {
+      id
+    }
+    genres {
+      id
+    }
+    votes {
+      id
+    }
+  }
+}
+
 query Login($nick: String!, $password: String!) {
   Login(nick: $nick, password: $password) {
     id

@@ -33,7 +33,11 @@
 
             <v-tabs-items v-model="tab">
               <v-tab-item key="platforms">
-                <autocomplete v-model="selectedPlatforms" :search="searchPlatforms">
+                <autocomplete
+                  v-model="selectedPlatforms"
+                  :search="searchPlatforms"
+                  :disabled="isLoadingCreate"
+                >
                   <template v-slot="{ item, toggle }">
                     <div class="ma-1">
                       <card
@@ -103,9 +107,7 @@ export default {
       return genre;
     });
 
-    return {
-      genres
-    };
+    return { genres };
   },
   data() {
     return {
@@ -132,10 +134,10 @@ export default {
     }
   },
   methods: {
-    async searchPlatforms(q) {
+    async searchPlatforms(query) {
       const result = await this.$apollo.query({
         query: SearchPlatforms,
-        variables: { q }
+        variables: { query }
       });
       return result.data.SearchPlatforms.map(platform => {
         return {
