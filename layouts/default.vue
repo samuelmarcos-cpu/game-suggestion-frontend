@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <v-app-bar fixed app>
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-btn text nuxt to="/">{{ title }}</v-btn>
       <v-spacer />
       <v-text-field
         filled

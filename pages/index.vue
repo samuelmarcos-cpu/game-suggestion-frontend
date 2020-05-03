@@ -2,13 +2,13 @@
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
       <v-flex xs12 sm10 md8>
-        <h1 class="text-center">GAME SUGGESTION</h1>
         <v-form ref="form" v-model="valid" class="my-5">
           <v-text-field
-            clearable
-            rounded
-            filled
             dense
+            filled
+            rounded
+            clearable
+            label="Question"
             placeholder="Type your question here"
             v-model="question"
             :rules="questionRules"
