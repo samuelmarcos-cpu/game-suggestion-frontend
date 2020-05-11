@@ -2,6 +2,10 @@
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
       <v-flex xs12 sm10 md8>
+        <div class="d-flex flex-column align-center justify-space-around my-5">
+          <h1 class="display-4">Games Poll</h1>
+          <p class="headline">Create polls about games your way, easy, fast and completely free</p>
+        </div>
         <v-form ref="form" v-model="valid" class="my-5">
           <v-text-field
             dense
@@ -34,6 +38,7 @@
             <v-tabs-items v-model="tab">
               <v-tab-item key="platforms">
                 <autocomplete
+                  placeholder="PlayStation 4, Xbox One or Nintendo Switch"
                   v-model="selectedPlatforms"
                   :search="searchPlatforms"
                   :disabled="isLoadingCreate"

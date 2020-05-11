@@ -1,6 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
-const title = 'Game Suggestion'
+const title = 'Games Poll'
 const description = 'Find your ideal game according to your criteria'
 
 export default {
@@ -52,9 +52,7 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint:
-          process.env.URL_SERVER ||
-          'https://game-suggestion-backend.herokuapp.com'
+        httpEndpoint: process.env.URL_SERVER || 'http://localhost:4000/'
       }
     }
   },

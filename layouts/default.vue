@@ -87,7 +87,7 @@ export default {
   ...mapActions({ created: "setUserCookie" }),
   data() {
     return {
-      title: "Game Suggestion",
+      title: "Games Poll",
       query: "",
       userIcon: mdiAccount,
       loginIcon: mdiLogin,
