@@ -6,7 +6,7 @@ Games Poll é uma aplicação que permite fazer enquete de jogos, onde o usuári
 
 ## Instalação
 
-Após obter o projeto faça a instalação das dependências executando o comando
+Após obter o projeto faça a instalação das dependências executando o comando como **administrador**
 
 <pre>
 $ npm install
@@ -16,7 +16,7 @@ pelo terminal na raiz do projeto
 
 ## Uso
 
-Após rodar o [backend](https://github.com/samuelmarcos-cpu/game-suggestion-backend) execute o comando
+Após rodar o [**backend**](https://github.com/samuelmarcos-cpu/game-suggestion-backend) execute o comando
 
 <pre>
 $ npm run dev
