@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 import colors from 'vuetify/es5/util/colors'
 
 const title = 'Games Poll'
@@ -44,7 +46,7 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: ['@nuxtjs/vuetify'],
+  buildModules: ['@nuxtjs/vuetify', '@nuxtjs/dotenv'],
   /*
    ** Nuxt.js modules
    */

@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^5.1.45",
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/vuetify": "^1.0.0"
   }
 }
